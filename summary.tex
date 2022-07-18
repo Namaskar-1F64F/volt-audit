@@ -2,12 +2,13 @@
 \section{Executive Summary}\label{executive-summary}}
 
 % FIXME
-I performed a security review of the Volt System Oracle over two days for a total of 10 hours. During this time, I became familiar with the protocol,
-did a line by line review, and thought of potential attack vectors if I were a malicious attacker. An area of particular concern was the deployment script for VIP 2.
-% FIXME
-The review was over \href{https://github.com/volt-protocol/volt-protocol-core/pull/82}{PR #82} in its entirety. Specifically, commit \href{https://github.com/volt-protocol/volt-protocol-core/pull/82/commits/73a7ead63b61afc8c65f39efae2180d7d94cf080}{73a7ead}. 
+I spent a total of 10 hours reviewing the changes split across two days. I have reviewed Volt protocol in the past so I already had a good understanding of the system. 
 
-I found no issues with the implementation. 
+In this review, I spent a majority of my time reviewing `VoltSystemOracle.sol` & `VoltSystemOracle.t.sol`. I also did a less comprehensive review on the deployment scripts and integration tests. 
+% FIXME
+The review was over \href{https://github.com/volt-protocol/volt-protocol-core/pull/82}{PR #82}. Specifically, commit \href{https://github.com/volt-protocol/volt-protocol-core/pull/82/commits/73a7ead63b61afc8c65f39efae2180d7d94cf080}{73a7ead}. 
+
+I found no issues with the implementation. There are a few limitations to be aware of all outlined in \href{https://github.com/volt-protocol/volt-protocol-core/pull/82}{VIP2.md}. 
 
 \begin{longtable}[c]{|l|l|}
 \hline \textbf{PR #} & \textbf{Commit} \\
