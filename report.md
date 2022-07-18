@@ -1,21 +1,11 @@
 # Always Be Growing
 
-# Scope 
-https://github.com/volt-protocol/volt-protocol-core/pull/82
 
 
 # Introduction
-
-Volt was previously an inflation-pegged stablecoin. In the PR under review, they are moving from being pegged by a CPI oracle to being pegged by a VoltSystemOracle. The VoltSystemOracle is configured with a starting price, a start period of when interest should start accruing, and the monthly price change denominated in basis points. Once the VoltSystemOracle has been deployed these values can not be changed. For any changes of these values to happen a new oracle would need deployed and Volt protocol would need configured to use the new oracle.   
-
-I spent a total of 10 hours reviewing the changes split across two days. I have reviewed Volt protocol in the past so I already had a good understanding of the system. 
-
-In this review, I spent a majority of my time reviewing `VoltSystemOracle.sol` & `VoltSystemOracle.t.sol`. I also did a less comprehensive review on the deployment scripts and integration tests. 
+Volt is an inflation resistant stablecoin. In this PR they are swapping from using a CPI oracle to using a Volt System Oracle. The Volt System Oracle is configured with a starting price, a start period of when interest should start accruing, and the monthly price change denominated in basis points. Once the Volt System Oracle has been deployed these values can not be changed. For any changes of these values to happen a new oracle would need deployed and Volt protocol would need configured to use the new oracle.   
 
 *Disclaimer:* This security review does not guarantee against a hack. It is a snapshot in time of brink according to the specific commit by a one person team. Any modifications to the code will require a new security review.
-
-Summary:
-No issues found that were not already called out and mitigated in VIP-2.md
 
 
 # Methodology 
