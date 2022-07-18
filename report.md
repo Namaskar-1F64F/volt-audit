@@ -1,3 +1,6 @@
+# ABG | Always Be Growing
+Always Be Growing is a group of talented Web3 Engineers. https://abg.garden
+
 # Introduction
 
 The Volt protocol aims to peg a stablecoin to inflation, but with this PR, a new "oracle" is going to be used as a stop-gap measure. 
@@ -50,7 +53,10 @@ No findings
 No findings
 ## Medium Risk
 No findings
-## Informational 
+## Low Risk
+No findings
+## Informational
+1 finding
 
 ### Unnecessary / Inconsistent Override of Properties
 
@@ -68,6 +74,7 @@ uint256 public immutable monthlyChangeRateBasisPoints;
 
 **Recommendation:**
 ```diff
+- uint256 public immutable monthlyChangeRateBasisPoints;
 + uint256 public immutable override monthlyChangeRateBasisPoints;
 ```
 
@@ -79,9 +86,4 @@ Some of the NatSpecs are out of sync between the Interface & the Contract itself
 Some of the comments about timeframes are inaccurate from the change of a year to a month. Consider using something like timeframe and not being specific about 'month' or 'year'.
 
 I did not fully understand the deployment process. I believe it can be in a state where the "validate" function is run, but without DO_DEPLOY on L34 of utils/checkProposal.ts the old version of the saved addresses are used to verify. Then, it might give a false sense of security that the deployment is "valid". Consider double checking this process.
-
-<!-- A template hack to generate a newline in LaTeX -->
-\clearpage
-
-# Appendix
 
