@@ -1,5 +1,5 @@
 # Always Be Growing
-
+ABG is a talented group of engineers focused on growing the web3 ecosystem.
 
 
 # Introduction
