@@ -23,6 +23,10 @@ On a restricted time I was unable to deeply investigate all aspects of the syste
   - Contract interaction
   - Inheritance
 - Line by line review
+  - Contract
+  - Interface
+  - Tests
+- Proposal Deployment
 
 ### Line by line review
 Read through Interface and NatSpec. **Assumed** contract deployment would be as intended & values used to construct would be reasonable. Kept in mind Solcutiry guidelines. 
@@ -42,7 +46,7 @@ Understood periodStartTime and TIMEFRAME are both in the same denomination, and 
 
 The tests and fuzz tests appear to cover every aspect of this.
 
-#### Proposal
+### Proposal Deployment
 The proposal framework was new to me and seemed like a particular area of interest as deployment, role changing, and configuration set happens. Overall, I believe this will work.
 
 # Findings 
