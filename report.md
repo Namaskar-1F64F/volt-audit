@@ -1,5 +1,5 @@
 # Always Be Growing
-ABG is a talented group of engineers focused on growing the web3 ecosystem.
+ABG is a talented group of engineers focused on growing the web3 ecosystem. Learn more at https://abg.garden
 
 
 # Introduction
@@ -17,24 +17,24 @@ I looked through each of the files updated in this PR to get a full understandin
 
 2. Manual verification of the `getCurrentOraclePrice()` and `compoundInterest()` functions. I wanted to ensure that these functions were fully and correctly tested.
 
-Some specific things I looked into: 
-* Are the `_calculateDelta` and `_calculateLinearInterpolation` helpers in `VoltSystemOracle.t.sol` correct? 
-* Does `getCurrentOraclePrice()` work correctly within a specific period?
-* Does `getCurrentOraclePrice()` work correctly across periods?
-* Any situations where `getCurrentOraclePrice()` could revert? 
-* Does the value returned by`getCurrentOraclePrice()` work correctly if there are multiple time periods between each `compoundInterest()` calls? 
-* How long into the future can this oracle be depended on?
+    Some specific things I looked into: 
+    * Are the `_calculateDelta` and `_calculateLinearInterpolation` helpers in `VoltSystemOracle.t.sol` correct? 
+    * Does `getCurrentOraclePrice()` work correctly within a specific period?
+    * Does `getCurrentOraclePrice()` work correctly across periods?
+    * Any situations where `getCurrentOraclePrice()` could revert? 
+    * Does the value returned by`getCurrentOraclePrice()` work correctly if there are multiple time periods between each `compoundInterest()` calls? 
+    * How long into the future can this oracle be depended on?
 
 3. I explored the impact of what would happen if `compoundInterest()` did not get called for multiple days.
 This situation had already been called out and explored by the core team and they will be using a keeper to prevent long periods of time without a `compoundInterest()` call.  As outlined by the team, calling this method in a timely fashion is important to prevent a possible price arbitrage between before the `compoundInterest()` call and after the call. Even in the case of a black swan event where `compoundInterest()` does go multiple days without being called, the arbitrage opportunity is minimal due to the mint/redeem limits & fees. 
 
-I ran some rough numbers on what the impact would be if there was an issue with the keeper and `compoundInterest()` is not called for 24h. Exploiting this on Arbitrum would not make sense unless there was a much longer period because there is a 5 basis fee on both mint and redeem that would be larger than any potential profit. For mainnet USDC PSM it there's currently a 0 basis fee on redeem and will soon be a 0 basis fee on mint, making this theoretically exploitable. There is a rate limit on how much volt can be minted/redeemed that significantly reduces the possible profit from this. 
+    I ran some rough numbers on what the impact would be if there was an issue with the keeper and `compoundInterest()` is not called for 24h. Exploiting this on Arbitrum would not make sense unless there was a much longer period because there is a 5 basis fee on both mint and redeem that would be larger than any potential profit. For mainnet USDC PSM it there's currently a 0 basis fee on redeem and will soon be a 0 basis fee on mint, making this theoretically exploitable. There is a rate limit on how much volt can be minted/redeemed that significantly reduces the possible profit from this. 
 
-In the current configuration, the max amount that can be minted at once is 10m, and if flash loaning 10m (dydx w/ 0% fee) to atomically arb this at 20 monthly basis points and 1 day of delay to `compoundInterest()` then possible arb profit would be ~$600.
+    In the current configuration, the max amount that can be minted at once is 10m, and if flash loaning 10m (dydx w/ 0% fee) to atomically arb this at 20 monthly basis points and 1 day of delay to `compoundInterest()` then possible arb profit would be ~$600.
 
-Might be worth considering to keep a very small fee on mint or redeem if ever increasing the mint cap in the future
+    Might be worth considering to keep a very small fee on mint or redeem if ever increasing the mint cap in the future
 
-# Recommendations:
+# Recommendations
 * Magic strings (addresses) are used a few places in the code. I recommend naming all addresses that are being used in the code. This would help reviewers and devs to understand the significance of each address. This would also help prevent against regression issues in the future where an address is changed only in one place but not in others. 
 * I recommend exploring simplifying and clarifying the deployment logic and integration tests. While the current logic appears to be sound and well tested there seems to be some complexity which increases the risk of an error in future deployments. 
 * Documentation and namings can be improved. Compounding interval was changed from 1y to 1mo but namings and descriptions have not yet been updated. 
