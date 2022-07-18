@@ -1,5 +1,5 @@
-# ABG | Always Be Growing
-Always Be Growing is a group of talented Web3 Engineers. https://abg.garden
+# Always Be Growing
+ABG is a talented group of engineers focused on growing the web3 ecosystem. Learn more at https://abg.garden
 
 # Introduction
 
