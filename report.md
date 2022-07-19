@@ -3,7 +3,8 @@ ABG is a talented group of engineers focused on growing the web3 ecosystem. Lear
 
 # Introduction
 
-The Volt protocol aims to peg a stablecoin to inflation, but with this PR, a new "oracle" is going to be used as a stop-gap measure. 
+For this PR, a new "oracle" is going to be used as a stop-gap measure. This will replace the existing CPI based oracle.
+
 This VoltSystemOracle has a pre-defined target set at deployment for interest to compound over an, also set at deployment, timeframe. While reviewing
 the contract, there are only two functions, each with concerns.
 
@@ -11,10 +12,12 @@ the contract, there are only two functions, each with concerns.
 2. Do the tests have coverage over the functionality?
 3. Is the deployment strategy going to be successful?
 
+As part of this PR, a new OraclePassThrough and this VoltSystemOracle will be deployed. Additionally, other contract calls will be made with an OptimisticTimelock.
+
 *Disclaimer:* This security review does not guarantee against a hack. It is a snapshot in time of brink according to the specific commit by a single human. Any modifications to the code will require a new security review.
 
 # Methodology
-On a restricted time I was unable to deeply investigate all aspects of the system. The following is steps I took to evaluate the change.
+The following is steps I took to evaluate the change.
 
 - Clone & Setup project
 - Read Readme and related documentation
@@ -25,7 +28,8 @@ On a restricted time I was unable to deeply investigate all aspects of the syste
 - Line by line review
   - Contract
   - Interface
-  - Tests
+  - Unit Tests
+  - Integration Tests
 - Proposal Deployment
 
 ### Line by line review
@@ -46,8 +50,17 @@ Understood periodStartTime and TIMEFRAME are both in the same denomination, and 
 
 The tests and fuzz tests appear to cover every aspect of this.
 
+### Integration Tests
+I considered results of pointing the new oracle and oracle pass through. I did a line-by-line review of the integration tests.
+
+1. Does the new oracle implement the correct methods?
+2. Is the price returned correctly?
+3. Is the configuration correct?
+
+The integration tests for both the Arbitrum and Mainnet networks covered these questions and were all passing. The tests looked sound.
+
 ### Proposal Deployment
-The proposal framework was new to me and seemed like a particular area of interest as deployment, role changing, and configuration set happens. Overall, I believe this will work.
+The deployment and proposal process was new to me and seemed like a particular area of interest as deployment, role changing, and setting configuration happens. I reviewed the flow and believe it to be valid. During deployment the starting oracle price must be set as close to the current price as possible to avoid potential arbitrage. I ran through the `checkProposal` script on the forked node which succesfully ran.
 
 # Findings 
 
@@ -89,5 +102,7 @@ Some of the NatSpecs are out of sync between the Interface & the Contract itself
 
 Some of the comments about timeframes are inaccurate from the change of a year to a month. Consider using something like timeframe and not being specific about 'month' or 'year'.
 
-I did not fully understand the deployment process. I believe it can be in a state where the "validate" function is run, but without DO_DEPLOY on L34 of utils/checkProposal.ts the old version of the saved addresses are used to verify. Then, it might give a false sense of security that the deployment is "valid". Consider double checking this process.
+The OraclePassThrough constructor accepts an IScalingPriceOracle contract, but the VoltSystemOracle is used. While the functions used are identical as far as the ABI is concerned, the usage is inconsistent with the actual contract type.
+
+The `checkProposal.ts` script does not verify the correct usage of the newly deployed contracts. If the deploy function returned an object with a contract name different than the one existing in `mainnetAddresses.ts`, the validation will be invalid.
 
