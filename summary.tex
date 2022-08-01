@@ -2,13 +2,15 @@
 \section{Executive Summary}\label{executive-summary}}
 
 % FIXME
-I spent a total of 10 hours reviewing the changes split across two days. I have reviewed Volt protocol in the past so I already had a good understanding of the system. 
+I spent a total of 20 hours reviewing the changes split across four days. I have reviewed Volt protocol in the past so I already had a good understanding of the system. 
 
-In this review, I spent a majority of my time reviewing VoltSystemOracle.sol & VoltSystemOracle.t.sol. I also did a less comprehensive review on the deployment scripts and integration tests. 
+In this review, I did an in depth review of VoltSystemOracle.sol & VoltSystemOracle.t.sol. I also did an in depth review on the deployment scripts and integration tests. 
 % FIXME
 The review was over \href{https://github.com/volt-protocol/volt-protocol-core/pull/82}{PR #82}. Specifically, commit \href{https://github.com/volt-protocol/volt-protocol-core/pull/82/commits/73a7ead63b61afc8c65f39efae2180d7d94cf080}{73a7ead}. 
 
-I found no issues with the implementation. There are a few limitations to be aware of all outlined in \href{https://github.com/volt-protocol/volt-protocol-core/blob/feat/volt-oracle/governance-docs/VIP-2.md#known-contract-limitations}{VIP2.md}. 
+I found one issue with the implementation that was fully fixed. There are a few limitations to be aware of all outlined in \href{https://github.com/volt-protocol/volt-protocol-core/blob/feat/volt-oracle/governance-docs/VIP-2.md#known-contract-limitations}{VIP2.md}.
+
+The code has very thorough tests.
 
 \begin{longtable}[c]{|l|l|}
 \hline \textbf{PR #} & \textbf{Commit} \\
@@ -25,7 +27,7 @@ I found no issues with the implementation. There are a few limitations to be awa
 
 \caption*{\textbf{Summary}}
 % FIXME
-\hline Timeline & July 11, 2022 - July 12, 2022   \\
+\hline Timeline & July 11, 2022 - July 14, 2022    \\
 % FIXME
 \hline Methods & Manual Review \\
 % FIXME
@@ -41,7 +43,7 @@ I found no issues with the implementation. There are a few limitations to be awa
 % FIXME
 \hline Critical Risk & 0 \\
 % FIXME
-\hline High Risk & 0 \\
+\hline High Risk & 1 \\
 % FIXME
 \hline Medium Risk & 0 \\ 
 % FIXME

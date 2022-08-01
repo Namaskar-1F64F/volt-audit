@@ -7,10 +7,35 @@ Volt is an inflation resistant stablecoin. In this PR they are swapping from usi
 
 *Disclaimer:* This security review does not guarantee against a hack. It is a snapshot in time of brink according to the specific commit by a one person team. Any modifications to the code will require a new security review.
 
+# Findings 
+
+
+## High Risk
+### Role escalation possible from guardian to govenor 
+
+**Severity:** High
+
+**Context:** [`OptimisticTimelock.sol#L30-L32`](https://github.com/volt-protocol/volt-protocol-core/blob/83aa5ae95862ffd9607cb96889c4eaa989ed0a34/contracts/dao/OptimisticTimelock.sol#L30)
+
+**Description:**
+The optimistic timelocks have the governor role. A user with the guardian role can call the `becomeAdmin()` method on the timelock to become the admin, they would then be able execute transactions as if they had the governor role. 
+
+```solidity
+    function becomeAdmin() public onlyGuardianOrGovernor {
+        this.grantRole(TIMELOCK_ADMIN_ROLE, msg.sender);
+    }
+```
+
+**Recommendation:**
+Deploy new timelocks without the ability for guardians to grant themselves the `TIMELOCK_ADMIN_ROLE`
+
+**Volt:** Fixed by deploying new timelocks on [mainnet](0x75d078248eE49c585b73E73ab08bb3eaF93383Ae) and [arbitrum](0x2c01C9166FA3e16c24c118053E346B1DD8e72dE8).
+
+**ABG:** Resolved.
 
 # Methodology 
 
-I spent a majority of my time reviewing `VoltSystemOracle.sol` & `VoltSystemOracle.t.sol`. Below is a non-exhaustive list of what was tested and explored.
+I spent around half of my time reviewing `VoltSystemOracle.sol` & `VoltSystemOracle.t.sol` & the second half reviewing deployment and governance logic. Below is a non-exhaustive list of what was tested and explored.
 
 1. High level protocol overview and line by line code review.
 I looked through each of the files updated in this PR to get a full understanding of the changes and to decide where I would spend the majority of my time.
@@ -22,7 +47,7 @@ I looked through each of the files updated in this PR to get a full understandin
     * Does `getCurrentOraclePrice()` work correctly within a specific period?
     * Does `getCurrentOraclePrice()` work correctly across periods?
     * Any situations where `getCurrentOraclePrice()` could revert? 
-    * Does the value returned by`getCurrentOraclePrice()` work correctly if there are multiple time periods between each `compoundInterest()` calls? 
+    * Does the value returned by` getCurrentOraclePrice()` work correctly if there are multiple time periods between each `compoundInterest()` call? 
     * How long into the future can this oracle be depended on?
 
 3. I explored the impact of what would happen if `compoundInterest()` did not get called for multiple days.
@@ -34,8 +59,12 @@ This situation had already been called out and explored by the core team and the
 
     Might be worth considering to keep a very small fee on mint or redeem if ever increasing the mint cap in the future
 
+4. Examination of all privileged roles in the system. I looked through each of the roles and addresses to ensure that the addresses being used in the code matched the addresses that were on mainnet and arbitrum. This included checking the timelock roles, core roles, and the passthrough oracle owner. All roles match what was expected. Additionally, there is comprehensive role based fork testing ensuring that the roles match what is expected and that no unexpected addresses have been granted a role.
+
+5. Walk through of deployment logic. I examined the current governance deployment framework and brainstormed any ways where it could go wrong. The main areas of concern would be a misconfiguration of the new system, or a difference in price between the new price oracle and the old price oracle causing a possible arbitrage opportunity. Both of these risks have been mitigated through comprehensive integration testing & temporarly pausing minting until the pricing oracle has been updated.
+
+
 # Recommendations
 * Magic strings (addresses) are used a few places in the code. I recommend naming all addresses that are being used in the code. This would help reviewers and devs to understand the significance of each address. This would also help prevent against regression issues in the future where an address is changed only in one place but not in others. 
-* I recommend exploring simplifying and clarifying the deployment logic and integration tests. While the current logic appears to be sound and well tested there seems to be some complexity which increases the risk of an error in future deployments. 
-* Documentation and namings can be improved. Compounding interval was changed from 1y to 1mo but namings and descriptions have not yet been updated. 
+* I recommend exploring simplifying and clarifying the deployment logic and integration tests. While the current logic appears to be sound and well tested there seems to be some complexity which increases the risk of an error in future deployments. This would also simplify deploying to additional networks in the future.
 * Consider having a very small bips fee for minting/redeeming volt to negate any potential profit from flash mint/redeems. This is to remove/reduce any possible profit from #3 outlined above.   
