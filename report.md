@@ -3,7 +3,7 @@ ABG is a talented group of engineers focused on growing the web3 ecosystem. Lear
 
 # Introduction
 
-For this PR, a new "oracle" is going to be used as a stop-gap measure. This will replace the existing CPI based oracle.
+For this PR, a new "oracle" will be introduced as a stop-gap measure. This will replace the existing CPI based oracle.
 
 This VoltSystemOracle has a pre-defined target set at deployment for interest to compound over an, also set at deployment, timeframe. While reviewing
 the contract, there are only two functions, each with concerns.
@@ -43,8 +43,9 @@ Correctly a public view function, has no external calls,
 Understood the time delta is capped on range of 1 - TIMEFRAME, the price percentage change is the total amount of monthly change, and price delta is capped on a range of nearly 0 - 1 times the total monthly change.
 
 The tests and fuzz tests appear to cover every aspect of this.
+
 #### compoundInterest
-Assume the time period will not be out of date due to the keepers, the function is correctly external and has no external calls.
+**Assumed** the time period will not be out of date due to the keepers, the function is correctly external and has no external calls.
 
 Understood periodStartTime and TIMEFRAME are both in the same denomination, and even if block timestamp was manipulated after the `require`, the time would be in a valid state. A valid state being also means the period will not be more than one TIMEFRAME worth of compounding.
 
@@ -60,7 +61,9 @@ I considered results of pointing the new oracle and oracle pass through. I did a
 The integration tests for both the Arbitrum and Mainnet networks covered these questions and were all passing. The tests looked sound.
 
 ### Proposal Deployment
-The deployment and proposal process was new to me and seemed like a particular area of interest as deployment, role changing, and setting configuration happens. I reviewed the flow and believe it to be valid. During deployment the starting oracle price must be set as close to the current price as possible to avoid potential arbitrage. I ran through the `checkProposal` script on the forked node which succesfully ran.
+The deployment and proposal process was new to me and seemed like a particular area of interest as deployment, role changing, and setting configuration happens. I reviewed the flow and believe it to be valid. During deployment the starting oracle price must be set as close to the current price as possible to avoid potential arbitrage. I ran through the `checkProposal` script on the forked node which succesfully ran. 
+
+After my initial review, a robust Solidity-based simulation environment was introduced. The simulation covers the proposal, scheduling, and execution of a timelock transaction. This simulated action, set out by VIP-2 is included in an integration test. 
 
 # Findings 
 
@@ -97,12 +100,11 @@ uint256 public immutable monthlyChangeRateBasisPoints;
 
 An alternative recommendation is to remove all `override` decoration as the interface is mearly being implemented, and `override` is not needed. See [the issue](https://github.com/ethereum/solidity/issues/8281) and [the PR](https://github.com/ethereum/solidity/pull/11628) for more discussion.
 
+
+**Resolution**
+VOLT removed the override modifier on state variables in commit \href{https://github.com/volt-protocol/volt-protocol-core/blob/05894cb683a4463cd6d504c063bec80793b4e550/contracts/oracle/VoltSystemOracle.sol}{05894cb}
+
 # Additional Comments
-Some of the NatSpecs are out of sync between the Interface & the Contract itself like `monthlyChangeRateBasisPoints` and `getCurrentOraclePrice`. I would prefer the information be the same so I do not have to check both places.
 
-Some of the comments about timeframes are inaccurate from the change of a year to a month. Consider using something like timeframe and not being specific about 'month' or 'year'.
-
-The OraclePassThrough constructor accepts an IScalingPriceOracle contract, but the VoltSystemOracle is used. While the functions used are identical as far as the ABI is concerned, the usage is inconsistent with the actual contract type.
-
-The `checkProposal.ts` script does not verify the correct usage of the newly deployed contracts. If the deploy function returned an object with a contract name different than the one existing in `mainnetAddresses.ts`, the validation will be invalid.
+The temporary oracle code is well-tested, well-documented, and appears to work as intended.  The changes to implement, by simulating the timelock, gives a higher confidence in the integration process of switching to the new oracle. 
 
