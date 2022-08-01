@@ -102,7 +102,7 @@ An alternative recommendation is to remove all `override` decoration as the inte
 
 
 **Resolution**
-VOLT removed the override modifier on state variables in commit \href{https://github.com/volt-protocol/volt-protocol-core/blob/05894cb683a4463cd6d504c063bec80793b4e550/contracts/oracle/VoltSystemOracle.sol}{05894cb}
+VOLT removed the override modifier on state variables in commit [05894cb](https://github.com/volt-protocol/volt-protocol-core/blob/05894cb683a4463cd6d504c063bec80793b4e550/contracts/oracle/VoltSystemOracle.sol)
 
 # Additional Comments
 
