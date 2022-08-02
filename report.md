@@ -63,6 +63,12 @@ This situation had already been called out and explored by the core team and the
 
 5. Walk through of deployment logic. I examined the current governance deployment framework and brainstormed any ways where it could go wrong. The main areas of concern would be a misconfiguration of the new system, or a difference in price between the new price oracle and the old price oracle causing a possible arbitrage opportunity. Both of these risks have been mitigated through comprehensive integration testing & temporarly pausing minting until the pricing oracle has been updated.
 
+# Test Quality
+The Volt team has done a high level of diligence in ensuring that the code is fully tested and reliable. They used a combination of unit test, fuzz tests, and integration tests. 
+
+The new volt system oracle has been comprehensively tested through fuzz and unit tests that reimplement the LERP algorithm. These ensure that the oracle correctly follows the LERP algorithm at any point in time and that compounding works as expected. Additionally, there are detailed mainnet fuzz tests that simulate the execution of the proposal and ensure the `mintAmountOut()` and the `redeemAmountOut()` functions will return the correct amounts after the upgrade. 
+
+There is also role based testing that makes sure all roles are set up as expected, and a simulation framework that gives a high level of assurance that the governance proposal executes correctly. 
 
 # Recommendations
 * Magic strings (addresses) are used a few places in the code. I recommend naming all addresses that are being used in the code. This would help reviewers and devs to understand the significance of each address. This would also help prevent against regression issues in the future where an address is changed only in one place but not in others. 
